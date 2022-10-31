@@ -1,0 +1,3 @@
+Flask>=1.1
+Flask-RESTful>=0.35
+Jinja2>=2.10
