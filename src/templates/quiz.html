@@ -14,16 +14,38 @@
 
   {# TODO move to general style sheet #}
   <style>
-.quiz-page {
-  background-color: #ccc;
-}
-.container {
-  background-color: #fff;
-}
+    .quiz-page {
+      background-color: #ccc;
+    }
+    .container {
+      background-color: #fff;
+    }
+    audio {
+      min-width: 250px;
+    }
+    .answer-toggle button:hover {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
   </style>
 
   <body class="quiz-page">
     {{ bootstrap_script_links() }}
+    <script>
+      $(document).ready(function(){
+        // Javascript to enable link to tab
+        var hash = document.location.hash;
+        if (hash) {
+          $('.nav-tabs button[data-bs-target="'+hash+'"]').tab('show');
+        }
+
+        // Change hash for page-reload
+        $('.nav-tabs button').on('shown.bs.tab', function (e) {
+          if (history.pushState)
+            history.pushState(null, null, e.target.dataset.bsTarget);
+        });
+      });
+    </script>
 
     <div class="container mt-3">
       <div class="d-flex justify-content-center">
@@ -64,17 +86,24 @@
           {% macro quiz_question_panel(static_filename, question_text, answer_value_label) -%}
             <div class="quiz-question p-3">
               <audio controls src="{{url_for('static', filename=static_filename)}}"></audio>
-              <div class="py-1">
-                {{ question_text }}
+              <p class="font-weight-bold py-1">
+                <strong>{{ question_text }}</strong>
+              </p>
+              <p class=font-weight-light">
+                Note: You can listen multiple times but can only answer once.
+              </p>
+              <div class="d-flex flex-wrap align-items-center">
+                {% for answer in answer_value_label %}
+                <div class="answer-toggle ml-4">
+                  <label class="radio">
+                    <input type="radio" name="pitch-easy" value="{{ answer[0] }}" class="d-none">
+                    <button class="btn btn-secondary m-1 text-nowrap" type="button">
+                      {{ answer[1] }}
+                    </button>
+                  </label>
+                </div>
+                {% endfor %}
               </div>
-              {% for answer in answer_value_label %}
-              <div class="ans ml-2">
-                <label class="radio">
-                  <input type="radio" name="pitch-easy" value="{{ answer[0] }}">
-                  <span>{{ answer[1] }}</span>
-                </label>
-              </div>
-              {% endfor %}
             </div>
           {%- endmacro %}
 
@@ -90,32 +119,32 @@
 
           <div class="quiz-card rounded mb-3">
             <ul class="nav nav-tabs" id="pitch-navtab" role="tablist">
-              <li class="nav-item"><button data-bs-target="#pitch-easy-pane" data-bs-toggle="tab" id="pitch-easy-button"
-                  class="nav-link active" aria-controls="pitch-easy-pane"   aria-selected="true"  data-toggle="tab" role="tab">
+              <li class="nav-item"><button data-bs-target="#pitch-easy" data-bs-toggle="tab" id="pitch-easy-button"
+                  class="nav-link active" aria-controls="pitch-easy"   aria-selected="true"  data-toggle="tab" role="tab">
                     Easy
               </button></li>
-              <li class="nav-item"><button data-bs-target="#pitch-medium-pane" data-bs-toggle="tab" id="pitch-medium-button"
-                  class="nav-link"        aria-controls="pitch-medium-pane" aria-selected="false" data-toggle="tab" role="tab">
+              <li class="nav-item"><button data-bs-target="#pitch-medium" data-bs-toggle="tab" id="pitch-medium-button"
+                  class="nav-link"        aria-controls="pitch-medium" aria-selected="false" data-toggle="tab" role="tab">
                     Medium
               </button></li>
-              <li class="nav-item"><button data-bs-target="#pitch-hard-pane" data-bs-toggle="tab" id="pitch-hard-button"
-                  class="nav-link"        aria-controls="pitch-hard-pane" aria-selected="false" data-toggle="tab" role="tab">
+              <li class="nav-item"><button data-bs-target="#pitch-hard" data-bs-toggle="tab" id="pitch-hard-button"
+                  class="nav-link"        aria-controls="pitch-hard" aria-selected="false" data-toggle="tab" role="tab">
                     Hard
               </button></li>
             </ul>
             <div class="tab-content clearfix rounded-bottom border border-top-0" id="pitch-content">
-              <div class="tab-pane show active" id="pitch-easy-pane" role="tabpanel" tabindex="0">
+              <div class="tab-pane show active" id="pitch-easy" role="tabpanel" tabindex="0">
                 <div class="quiz-question">
                   {{ quiz_question_title(
-                        "What order do three pitches play in?",
-                        "This quiz plays three pitches in a random order. "
-                            "Your goal is to identify the order."
-                            "The notes(🎶) are always C, E, G but they appear in any of the 6 permutations."
+                        "What order do three notes play in?",
+                        "This quiz plays three notes in a random order. "
+                            "Your goal is to identify the order the three notes (low, mid, high) play in. "
+                            "The notes(🎶) are always C, E, G but they are shuffled randomly."
                   )|indent(6) }}
 
                   {{ quiz_example(
-                        "This is an example of Low,&nbsp;High,&nbsp;Med",
-                        "what_pitch/easy_CEG.wav"
+                        "This is an example of \"Low&nbsp;then&nbsp;High&nbsp;then&nbsp;Med\"",
+                        "what_pitch/easy_CGE.wav"
                   )|indent(6)}}
                 </div>
                 <div class="quiz-card mt-3">
@@ -127,13 +156,10 @@
                   )|indent(7) }}
                   <div class="quiz-controls">
                     <div class="d-flex flex-row justify-content-between align-items-center p-3">
-                      <button class="btn btn-primary" type="button">
-                        Submit Answer
+                      <button class="btn btn-outline-secondary" type="button">
+                        Try a different sample
                       </button>
-                      <button class="btn btn-secondary" type="button">
-                        Skip variation
-                      </button>
-                      <button class="btn btn-secondary" type="button" onclick="$('#pitch-medium-button').click()">
+                      <button class="btn btn-outline-success" type="button" onclick="$('#pitch-medium-button').click()">
                         Harder version
                       </button>
                     </div>
@@ -141,11 +167,44 @@
                 </div>
               </div>
 
-              <div class="tab-pane" id="pitch-medium-pane" role="tabpanel" tabindex="0">
-                This test will increase the octave for each pitch
+              <div class="tab-pane" id="pitch-medium" role="tabpanel" tabindex="0">
+                <div class="quiz-question">
+                  {{ quiz_question_title(
+                        "What order do three notes play in?",
+                        "Similiar to the easy version this quiz plays three notes in a random order "
+                            "but this time with an octave jump between each note. "
+                            "Your goal is to identify the order the three notes (low, mid, high) play in. "
+                            "The notes(🎶) are always C, E, G but they are shuffled randomly."
+                  )|indent(6) }}
+
+                  {{ quiz_example(
+                        "This is an example of \"High&nbsp;then&nbsp;Mid&nbsp;then&nbsp;Low\" "
+                            "don't let the octave increase distract you from the pitch of the individual notes.",
+                        "what_pitch/medium_GEC.wav"
+                  )|indent(6)}}
+                </div>
+                <div class="quiz-card mt-3">
+                  {# TODO make this a carousel #}
+                  {{ quiz_question_panel(
+                        "what_pitch/medium_CGE.wav",
+                        "What order are the notes played in?",
+                        pitch_answers
+                  )|indent(7) }}
+                  <div class="quiz-controls">
+                    <div class="d-flex flex-row justify-content-between align-items-center p-3">
+                      <button class="btn btn-outline-secondary" type="button">
+                        Try a differnt sample
+                      </button>
+                      <button class="btn btn-outline-success" type="button" onclick="$('#pitch-hard-button').click()">
+                        Harder version
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="tab-pane" id="pitch-hard-pane" role="tabpanel" tabindex="0">
-                This test randomizes the octave of eachch pitch
+
+              <div class="tab-pane" id="pitch-hard" role="tabpanel" tabindex="0">
+                TBD: In this version the octave is also randomizes.
               </div>
             </div>
           </div>
