@@ -23,8 +23,9 @@
   </style>
 
   <body class="quiz-page">
+    {{ bootstrap_script_links() }}
+
     <div class="container mt-3">
-      {# TODO sections for Easy / Medium / Hard #}
       <div class="d-flex justify-content-center">
         <div class="col-md-11 col-lg-8">
           <div class="py-3">
@@ -33,63 +34,118 @@
             </span>
             <span>Time to test your ears(👂)</span>
           </div>
-          <div class="quiz-card border rounded my-3">
-            <div class="quiz-title p-3 border-bottom">
-              <div class="d-flex flex-row justify-content-between align-items-center mcq">
-                <h4>What Pitch Quiz</h4>
-              </div>
-            </div>
-            <div class="quiz-question">
-              <div class="quiz-question-title border-bottom p-3">
-                <div class="d-flex mb-1">
-                  <h5 class="text-danger">Q.&nbsp;</h5>
-                  <h5>What order do three pitches play in?</h5>
-                </div>
-                <div>
-                  Explination: In this test three pitches are played in a random order. Your goal is to identify the order. The notes(🎶) are always C, E, G but they appear in any of the 6 orderings.
-                </div>
-              </div>
-              {# TODO make this a carousel #}
-              <div class="quiz-example border-bottom p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                  <div class="me-1">
-                    This is an example of Low,&nbsp;High,&nbsp;Med
-                  </div>
-                  <audio controls src="{{url_for('static', filename='what_chord/easy_Cmajor_3.wav')}}"></audio>
-                </div>
-              </div>
-            </div>
+          <div class="quiz-title">
+            <h4>What Pitch Quiz</h4>
           </div>
-          <div class="quiz-card border rounded my-3">
-            <div class="quiz-answers p-3">
-              <audio controls src="{{url_for('static', filename='what_chord/easy_Cmajor_3.wav')}}"></audio>
-              <div class="py-1">
-                What order did the notes play in?
+
+          {% macro quiz_question_title(header, description) -%}
+            <div class="quiz-question-title border-bottom p-3">
+              <div class="d-flex mb-1">
+                <h5 class="text-danger">Q.&nbsp;</h5>
+                <h5>{{header}}</h5>
               </div>
-              <div class="ans ml-2">
-                <label class="radio">
-                  <input type="radio" name="pitch-easy" value="123">
-                  <span>Low Mid High</span>
-                </label>
-              </div>
-              <div class="ans ml-2">
-                <label class="radio">
-                  <input type="radio" name="pitch-easy" value="132">
-                  <span>Low High Mid</span>
-                </label>
+              <div>
+                {{description}}
               </div>
             </div>
-            <div class="quiz-controls">
-              <div class="d-flex flex-row justify-content-between align-items-center p-3">
-                <button class="btn btn-primary" type="button">
-                  Submit Answer
-                </button>
-                <button class="btn btn-secondary" type="button">
-                  Skip variation
-                </button>
-                <button class="btn btn-secondary" type="button">
-                  Harder version
-                </button>
+          {%- endmacro %}
+
+          {% macro quiz_example(description, static_filename) -%}
+            <div class="quiz-example border-bottom p-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="me-1">
+                  {{description|safe}}
+                </div>
+                <audio controls src="{{url_for('static', filename=static_filename)}}"></audio>
+              </div>
+            </div>
+          {%- endmacro %}
+
+          {% macro quiz_question_panel(static_filename, question_text, answer_value_label) -%}
+            <div class="quiz-question p-3">
+              <audio controls src="{{url_for('static', filename=static_filename)}}"></audio>
+              <div class="py-1">
+                {{ question_text }}
+              </div>
+              {% for answer in answer_value_label %}
+              <div class="ans ml-2">
+                <label class="radio">
+                  <input type="radio" name="pitch-easy" value="{{ answer[0] }}">
+                  <span>{{ answer[1] }}</span>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          {%- endmacro %}
+
+          {# Would be nice to use a map to build the answers but turned out to be ugly #}
+          {% set pitch_answers = [
+              ("123", "Low Mid High"),
+              ("132", "Low High Mid"),
+              ("213", "Mid Low High"),
+              ("231", "Mid High Low"),
+              ("312", "High Low Mid"),
+              ("321", "High Mid Low"),
+          ] %}
+
+          <div class="quiz-card rounded mb-3">
+            <ul class="nav nav-tabs" id="pitch-navtab" role="tablist">
+              <li class="nav-item"><button data-bs-target="#pitch-easy-pane" data-bs-toggle="tab" id="pitch-easy-button"
+                  class="nav-link active" aria-controls="pitch-easy-pane"   aria-selected="true"  data-toggle="tab" role="tab">
+                    Easy
+              </button></li>
+              <li class="nav-item"><button data-bs-target="#pitch-medium-pane" data-bs-toggle="tab" id="pitch-medium-button"
+                  class="nav-link"        aria-controls="pitch-medium-pane" aria-selected="false" data-toggle="tab" role="tab">
+                    Medium
+              </button></li>
+              <li class="nav-item"><button data-bs-target="#pitch-hard-pane" data-bs-toggle="tab" id="pitch-hard-button"
+                  class="nav-link"        aria-controls="pitch-hard-pane" aria-selected="false" data-toggle="tab" role="tab">
+                    Hard
+              </button></li>
+            </ul>
+            <div class="tab-content clearfix rounded-bottom border border-top-0" id="pitch-content">
+              <div class="tab-pane show active" id="pitch-easy-pane" role="tabpanel" tabindex="0">
+                <div class="quiz-question">
+                  {{ quiz_question_title(
+                        "What order do three pitches play in?",
+                        "This quiz plays three pitches in a random order. "
+                            "Your goal is to identify the order."
+                            "The notes(🎶) are always C, E, G but they appear in any of the 6 permutations."
+                  )|indent(6) }}
+
+                  {{ quiz_example(
+                        "This is an example of Low,&nbsp;High,&nbsp;Med",
+                        "what_pitch/easy_CEG.wav"
+                  )|indent(6)}}
+                </div>
+                <div class="quiz-card mt-3">
+                  {# TODO make this a carousel #}
+                  {{ quiz_question_panel(
+                        "what_pitch/easy_CGE.wav",
+                        "What order are the notes played in?",
+                        pitch_answers
+                  )|indent(7) }}
+                  <div class="quiz-controls">
+                    <div class="d-flex flex-row justify-content-between align-items-center p-3">
+                      <button class="btn btn-primary" type="button">
+                        Submit Answer
+                      </button>
+                      <button class="btn btn-secondary" type="button">
+                        Skip variation
+                      </button>
+                      <button class="btn btn-secondary" type="button" onclick="$('#pitch-medium-button').click()">
+                        Harder version
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-pane" id="pitch-medium-pane" role="tabpanel" tabindex="0">
+                This test will increase the octave for each pitch
+              </div>
+              <div class="tab-pane" id="pitch-hard-pane" role="tabpanel" tabindex="0">
+                This test randomizes the octave of eachch pitch
               </div>
             </div>
           </div>
