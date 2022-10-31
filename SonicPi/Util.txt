@@ -2,7 +2,7 @@ define :start_record do
   use_osc "localhost",51235
   osc "/hello/world"
   osc "/start-recording","mystery-mixer"
-  sleep 0.75
+  sleep 1
 end
 
 define :finish_record do |name|

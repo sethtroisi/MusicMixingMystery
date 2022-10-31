@@ -1,16 +1,18 @@
+# Note Distance
+
 eval(File.read("Util.txt"))
 
 define :note_distance do |n1, n2, name|
   start_record
-
+  
   if (n1 > 1)
     play n1, release: 0.8
     sleep 1
   end
-
+  
   play n2, release: 0.8
   sleep 1
-
+  
   finish_record "note_distance/" + name + ".wav"
 end
 
