@@ -1,0 +1,9 @@
+eval(File.read("Util.txt"))
+
+start_record
+
+play :C4
+play :C5, release: 2.5
+play :C6, release: 1.5
+
+finish_record "three_tone"

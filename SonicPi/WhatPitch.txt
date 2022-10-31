@@ -1,0 +1,49 @@
+eval(File.read("Util.txt"))
+
+define :what_pitch do |n1, n2, n3, name|
+  start_record
+
+  play n1 #, release: 0.8
+  sleep 1
+  play n2 #, release: 0.8
+  sleep 1
+  play n3 #, release: 0.8
+  sleep 1
+
+  finish_record "what_pitch/" + name
+end
+
+define :what_pitch_hard do |n1, n2, n3, name|
+  # one octave down, same octave, one octave up
+  o_a = :C3 - :C4
+  o_b = :C4 - :C4
+  o_c = :C5 - :C4
+
+  what_pitch n1 + o_a, n2 + o_b, n3 + o_c, name + "_345.wav"
+  what_pitch n1 + o_a, n2 + o_c, n3 + o_b, name + "_354.wav"
+  what_pitch n1 + o_b, n2 + o_a, n3 + o_c, name + "_435.wav"
+  what_pitch n1 + o_b, n2 + o_c, n3 + o_a, name + "_453.wav"
+  what_pitch n1 + o_c, n2 + o_a, n3 + o_b, name + "_534.wav"
+  what_pitch n1 + o_c, n2 + o_b, n3 + o_a, name + "_543.wav"
+end
+
+what_pitch :C4, :E4, :G4, "easy_CEG.wav"
+what_pitch :C4, :G4, :E4, "easy_CGE.wav"
+what_pitch :E4, :C4, :G4, "easy_ECG.wav"
+what_pitch :E4, :G4, :C4, "easy_EGC.wav"
+what_pitch :G4, :C4, :E4, "easy_CGE.wav"
+what_pitch :G4, :E4, :C4, "easy_GEC.wav"
+
+what_pitch :C3, :E4, :G5, "medium_CEG.wav"
+what_pitch :C3, :G4, :E5, "medium_CGE.wav"
+what_pitch :E3, :C4, :G5, "medium_ECG.wav"
+what_pitch :E3, :G4, :C5, "medium_EGC.wav"
+what_pitch :G3, :C4, :E5, "medium_CGE.wav"
+what_pitch :G3, :E4, :C5, "medium_GEC.wav"
+
+what_pitch_hard :C4, :E4, :G4, "hard_CEG"
+what_pitch_hard :C4, :G4, :E4, "hard_CGE"
+what_pitch_hard :E4, :C4, :G4, "hard_ECG"
+what_pitch_hard :E4, :G4, :C4, "hard_EGC"
+what_pitch_hard :G4, :C4, :E4, "hard_CGE"
+what_pitch_hard :G4, :E4, :C4, "hard_GEC"

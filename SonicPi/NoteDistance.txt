@@ -1,0 +1,37 @@
+eval(File.read("Util.txt"))
+
+define :note_distance do |n1, n2, name|
+  start_record
+
+  if (n1 > 1)
+    play n1, release: 0.8
+    sleep 1
+  end
+
+  play n2, release: 0.8
+  sleep 1
+
+  finish_record "note_distance/" + name + ".wav"
+end
+
+# Easy
+for o_1 in 3..(5)
+  for o_2 in (o_1-2)..(o_1+2)
+    if ((o_1 -o_2).abs <= 1 or o_1 == 4)
+      note_distance :C0 + 12 * o_1, :C0 + 12 * o_2, "easy_C_#{o_1}#{o_2}"
+    end
+  end
+end
+
+# Medium
+for o_1 in [:D4, :G4]
+  for semitones in [-8, -5, -3, -1, 2, 4, 6]
+    note_distance o_1, o_1 + semitones, "medium_#{o_1}_#{semitones}"
+  end
+end
+
+# Hard
+for dist in -7..7
+  note = :C4 + dist
+  note_distance 0, note, "hard_" + note_info(note).midi_string + "_#{dist}"
+end
