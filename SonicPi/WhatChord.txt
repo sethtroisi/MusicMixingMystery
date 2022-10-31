@@ -1,0 +1,35 @@
+eval(File.read("Util.txt"))
+
+define :what_chord do |notes, name|
+  start_record
+  
+  play_chord notes, release: 2.8
+  sleep 3
+  
+  finish_record "what_chord/" + name
+end
+
+define :what_chord_medium do |note, name|
+  start_record
+  
+  play note, release: 2.8
+  sleep 3
+  
+  finish_record "what_chord/" + name
+end
+
+# Easy
+what_chord [:C4, :E4, :G4], "easy_Cmajor_3.wav"
+what_chord [:C4, :E4, :G4, :C5], "easy_Cmajor_4.wav"
+what_chord [:C4, :E4, :G4, :C5, :G5], "easy_Cmajor_5.wav"
+
+what_chord [:G4, :As4, :D4], "easy_Gminor_3.wav"
+what_chord [:G4, :As4, :D4, :As3], "easy_Gminor_4.wav"
+what_chord [:G4, :As4, :D4, :As3, :D5], "easy_Gminor_5.wav"
+
+# Medium
+what_chord_medium (chord :C4, 'm7'), "medium_C_m7.wav"
+what_chord_medium (chord :D4, 'M7'), "medium_D_M7.wav"
+what_chord_medium (chord :E4, '5'), "medium_E_5.wav"
+what_chord_medium (chord :F4, '9'), "medium_F_9.wav"
+what_chord_medium (chord :G4, '13'), "medium_G_13.wav"
