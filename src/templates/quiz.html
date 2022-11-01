@@ -6,28 +6,27 @@
   <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Language" content="en">
 
     <title>Music Mixing Mystery</title>
     {{ bootstrap_header_links() }}
-  </head>
 
-  {# TODO move to general style sheet #}
-  <style>
-    .quiz-page {
-      background-color: #ccc;
-    }
-    .container {
-      background-color: #fff;
-    }
-    audio {
-      min-width: 250px;
-    }
-    .answer-toggle button:hover {
-      background-color: #28a745;
-      border-color: #28a745;
-    }
-  </style>
+    {# TODO move to general style sheet #}
+    <style>
+      .quiz-page {
+        background-color: #ccc;
+      }
+      .container {
+        background-color: #fff;
+      }
+      audio {
+        min-width: 250px;
+      }
+      .answer-button button:hover {
+        background-color: #28a745;
+        border-color: #28a745;
+      }
+    </style>
+  </head>
 
   <body class="quiz-page">
     {{ bootstrap_script_links() }}
@@ -89,18 +88,15 @@
               <p class="font-weight-bold py-1">
                 <strong>{{ question_text }}</strong>
               </p>
-              <p class=font-weight-light">
+              <p class="font-weight-light">
                 Note: You can listen multiple times but can only answer once.
               </p>
               <div class="d-flex flex-wrap align-items-center">
                 {% for answer in answer_value_label %}
-                <div class="answer-toggle ml-4">
-                  <label class="radio">
-                    <input type="radio" name="pitch-easy" value="{{ answer[0] }}" class="d-none">
-                    <button class="btn btn-secondary m-1 text-nowrap" type="button">
-                      {{ answer[1] }}
-                    </button>
-                  </label>
+                <div class="answer-button ml-4">
+                  <button class="btn btn-secondary m-1 text-nowrap" type="button">
+                    {{ answer[1] }}
+                  </button>
                 </div>
                 {% endfor %}
               </div>
@@ -144,13 +140,13 @@
 
                   {{ quiz_example(
                         "This is an example of \"Low&nbsp;then&nbsp;High&nbsp;then&nbsp;Med\"",
-                        "what_pitch/easy_CGE.wav"
+                        "what_pitch/easy_CGE_trim.wav"
                   )|indent(6)}}
                 </div>
                 <div class="quiz-card mt-3">
                   {# TODO make this a carousel #}
                   {{ quiz_question_panel(
-                        "what_pitch/easy_CGE.wav",
+                        "what_pitch/easy_CGE_trim.wav",
                         "What order are the notes played in?",
                         pitch_answers
                   )|indent(7) }}
@@ -180,13 +176,13 @@
                   {{ quiz_example(
                         "This is an example of \"High&nbsp;then&nbsp;Mid&nbsp;then&nbsp;Low\" "
                             "don't let the octave increase distract you from the pitch of the individual notes.",
-                        "what_pitch/medium_GEC.wav"
+                        "what_pitch/medium_GEC_trim.wav"
                   )|indent(6)}}
                 </div>
                 <div class="quiz-card mt-3">
                   {# TODO make this a carousel #}
                   {{ quiz_question_panel(
-                        "what_pitch/medium_CGE.wav",
+                        "what_pitch/medium_CGE_trim.wav",
                         "What order are the notes played in?",
                         pitch_answers
                   )|indent(7) }}
